@@ -1,0 +1,188 @@
+'use client';
+
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Wireframe } from '@/types';
+import Modal from '@/components/shared/Modal';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import { useToast } from '@/components/shared/Toast';
+import dynamic from 'next/dynamic';
+
+const ExcalidrawWrapper = dynamic(() => import('@/components/wireframes/ExcalidrawEditor'), {
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center text-on-surface-variant">Loading editor...</div>,
+});
+
+function WireframesContent() {
+  const [wireframes, setWireframes] = useState<Wireframe[]>([]);
+  const [selected, setSelected] = useState<Wireframe | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showDelete, setShowDelete] = useState<string | null>(null);
+  const [newName, setNewName] = useState('');
+  const searchParams = useSearchParams();
+  const { addToast } = useToast();
+
+  const fetchWireframes = async () => {
+    const res = await fetch('/api/wireframes');
+    const all: Wireframe[] = await res.json();
+    setWireframes(all.filter((w) => !w.projectId));
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchWireframes(); }, []);
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') setShowCreate(true);
+  }, [searchParams]);
+
+  const create = async () => {
+    if (!newName.trim()) return;
+    const res = await fetch('/api/wireframes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newName }),
+    });
+    const wf = await res.json();
+    setWireframes((prev) => [wf, ...prev]);
+    setNewName('');
+    setShowCreate(false);
+    setSelected(wf);
+    addToast('Wireframe created');
+  };
+
+  const saveWireframe = async (data: string) => {
+    if (!selected) return;
+    await fetch(`/api/wireframes/${selected.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data }),
+    });
+  };
+
+  const deleteWireframe = async (id: string) => {
+    await fetch(`/api/wireframes/${id}`, { method: 'DELETE' });
+    setWireframes((prev) => prev.filter((w) => w.id !== id));
+    if (selected?.id === id) setSelected(null);
+    addToast('Wireframe deleted');
+  };
+
+  if (selected) {
+    return (
+      <div className="space-y-4 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSelected(null)}
+              className="text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+            >
+              ← Back to Gallery
+            </button>
+            <h2 className="text-lg font-semibold font-[family-name:var(--font-family-display)]">{selected.name}</h2>
+          </div>
+        </div>
+        <div className="h-[calc(100vh-180px)] rounded-xl overflow-hidden border border-outline-variant/10">
+          <ExcalidrawWrapper initialData={selected.data} onSave={saveWireframe} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold font-[family-name:var(--font-family-display)]">Wireframes</h1>
+          <p className="text-on-surface-variant text-sm mt-1">Standalone Excalidraw boards</p>
+        </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="btn-gradient px-4 py-2.5 rounded-xl text-sm font-medium inline-flex items-center gap-2"
+        >
+          <Plus size={16} /> New Board
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-32 bg-surface-container rounded-xl animate-pulse" />
+          ))}
+        </div>
+      ) : wireframes.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {wireframes.map((wf, idx) => (
+            <div
+              key={wf.id}
+              className="bg-surface-container rounded-xl p-5 border border-outline-variant/10 hover:border-primary/30 transition-all group cursor-pointer animate-fade-in"
+              style={{ animationDelay: `${idx * 60}ms` }}
+              onClick={() => setSelected(wf)}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-primary-container/20 text-primary">
+                  <Pencil size={16} />
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowDelete(wf.id); }}
+                  className="p-1.5 rounded text-on-surface-variant/30 opacity-0 group-hover:opacity-100 hover:text-error transition-all"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <h3 className="font-medium text-sm group-hover:text-primary transition-colors">{wf.name}</h3>
+              <p className="text-[0.625rem] text-on-surface-variant mt-1.5">
+                Last edited {new Date(wf.updatedAt).toLocaleDateString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-surface-container rounded-xl p-12 text-center border border-outline-variant/10">
+          <Pencil size={40} className="mx-auto text-on-surface-variant mb-3" />
+          <p className="text-on-surface-variant">No wireframes yet</p>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="mt-3 text-sm text-primary hover:text-primary-fixed transition-colors inline-flex items-center gap-1"
+          >
+            <Plus size={14} /> Create your first board
+          </button>
+        </div>
+      )}
+
+      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="New Wireframe" size="sm">
+        <div className="space-y-4">
+          <input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && create()}
+            placeholder="Board name"
+            className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
+            autoFocus
+          />
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-bright transition-colors">Cancel</button>
+            <button onClick={create} disabled={!newName.trim()} className="btn-gradient px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50">Create</button>
+          </div>
+        </div>
+      </Modal>
+
+      <ConfirmDialog
+        isOpen={!!showDelete}
+        onClose={() => setShowDelete(null)}
+        onConfirm={() => showDelete && deleteWireframe(showDelete)}
+        title="Delete Wireframe"
+        message="Are you sure you want to delete this wireframe?"
+        confirmLabel="Delete"
+        variant="danger"
+      />
+    </div>
+  );
+}
+
+export default function WireframesPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse"><div className="h-8 bg-surface-container rounded-lg w-48" /></div>}>
+      <WireframesContent />
+    </Suspense>
+  );
+}
