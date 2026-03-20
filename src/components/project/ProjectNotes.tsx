@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Plus, Save, Clock } from 'lucide-react';
 import { Note } from '@/types';
 import { useToast } from '@/components/shared/Toast';
+import BlockEditor from '@/components/shared/BlockEditor';
 
 interface ProjectNotesProps {
   projectId: string;
@@ -135,11 +136,9 @@ export default function ProjectNotes({ projectId }: ProjectNotesProps) {
                 </button>
               </div>
             </div>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Start writing your notes here..."
-              className="flex-1 p-4 bg-transparent text-sm leading-relaxed resize-none focus:outline-none placeholder:text-on-surface-variant/30"
+            <BlockEditor
+              initialContent={selectedNote.content}
+              onChange={(md) => setContent(md)}
             />
           </>
         ) : (

@@ -7,25 +7,32 @@ import { Note } from '@/types';
 import Modal from '@/components/shared/Modal';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useToast } from '@/components/shared/Toast';
+import BlockEditor from '@/components/shared/BlockEditor';
 
 const TEMPLATES = [
   {
-    id: 'study',
-    name: '📚 Study Session',
+    id: 'cornell',
+    name: '📚 Cornell Study Notes',
     icon: BookOpen,
-    content: `# Study Session\n\n## Topic\n\n\n## Date\n${new Date().toLocaleDateString()}\n\n## Key Concepts\n- \n- \n- \n\n## Summary\n\n\n## Questions to Revisit\n- \n\n## Resources\n- `,
+    content: `# 📚 Cornell Notes: [Topic]\n\n**Date:** ${new Date().toLocaleDateString()}\n**Course/Subject:** \n\n---\n\n## 🎯 Objectives / Essential Questions\n- What is the main idea?\n\n## 📝 Notes\n*Take detailed notes here during the lecture or reading.*\n- \n- \n\n## 🔑 Cues / Keywords\n*Distill the notes into key terms and questions.*\n- \n- \n\n## 📝 Summary\n*Write a brief summary of the entire session.*`,
   },
   {
-    id: 'daily',
-    name: '🗒️ Daily Log',
-    icon: CalendarDays,
-    content: `# Daily Log — ${new Date().toLocaleDateString()}\n\n## What I Did\n- \n\n## Blockers\n- \n\n## Tomorrow's Plan\n- `,
+    id: 'exam',
+    name: '🎓 Exam Prep',
+    icon: Search,
+    content: `# 🎓 Exam Preparation\n\n**Exam Date:** \n\n## 📌 Core Topics to Cover\n- [ ] Topic 1\n- [ ] Topic 2\n\n## 📖 Key Definitions\n- **Term 1:** Definition\n- **Term 2:** Definition\n\n## ❓ Practice Questions\n1. Question 1?\n   - *Answer*\n2. Question 2?\n   - *Answer*\n\n## ⚠️ Weak Areas to Review\n- `,
   },
   {
-    id: 'idea',
-    name: '💡 Idea',
+    id: 'meeting',
+    name: '⏱️ Meeting Minutes',
+    icon: Clock,
+    content: `# ⏱️ Meeting Minutes\n\n**Date:** ${new Date().toLocaleDateString()}\n**Attendees:** \n\n## 📋 Agenda\n1. \n2. \n\n## 💬 Discussion Notes\n- \n- \n\n## ✅ Action Items\n- [ ] Action 1 (Assigned to: )\n- [ ] Action 2 (Assigned to: )`,
+  },
+  {
+    id: 'brainstorm',
+    name: '💡 Project Brainstorming',
     icon: Lightbulb,
-    content: `# Idea: \n\n## Problem It Solves\n\n\n## Notes\n\n\n## Next Steps\n- `,
+    content: `# 💡 Project Idea: \n\n## 🎯 The Problem\nWhat problem are we trying to solve?\n\n## 🌟 The Solution (Pitch)\nHow does this project solve it?\n\n## 👥 Target Audience\n- \n\n## 🛠️ Technical Approach\n- Frontend: \n- Backend: \n\n## 🚀 Immediate Next Steps\n- [ ] \n- [ ] `,
   },
 ];
 
@@ -202,11 +209,9 @@ function NotesContent() {
                   </button>
                 </div>
               </div>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Start writing..."
-                className="flex-1 p-5 bg-transparent text-sm leading-relaxed resize-none focus:outline-none placeholder:text-on-surface-variant/30 font-mono"
+              <BlockEditor
+                initialContent={selectedNote.content}
+                onChange={(md) => setContent(md)}
               />
             </>
           ) : (
