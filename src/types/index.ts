@@ -87,6 +87,33 @@ export interface GitHubCommit {
   html_url: string;
 }
 
+export interface GitHubBranch {
+  name: string;
+  commit: {
+    sha: string;
+    url: string;
+  };
+}
+
+export interface GitHubCollaborator {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+}
+
+export interface GitHubPullRequest {
+  id: number;
+  number: number;
+  title: string;
+  state: string;
+  html_url: string;
+  user: {
+    login: string;
+    avatar_url: string;
+  };
+  created_at: string;
+}
+
 export type KanbanColumn = 'Backlog' | 'In Progress' | 'Review' | 'Done';
 export const KANBAN_COLUMNS: KanbanColumn[] = ['Backlog', 'In Progress', 'Review', 'Done'];
 export type Priority = 'Low' | 'Medium' | 'High' | 'Critical';

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Github, Star, ExternalLink, GitCommit, AlertCircle, Link as LinkIcon, Search } from 'lucide-react';
-import { Project, GitHubRepo, GitHubCommit } from '@/types';
+import { Github, Star, ExternalLink, GitCommit, AlertCircle, Link as LinkIcon, Search, GitBranch, Users, GitPullRequest } from 'lucide-react';
+import { Project, GitHubRepo, GitHubCommit, GitHubBranch, GitHubCollaborator, GitHubPullRequest } from '@/types';
 import Badge from '@/components/shared/Badge';
 import { useToast } from '@/components/shared/Toast';
 
@@ -14,6 +14,9 @@ interface ProjectGitHubProps {
 export default function ProjectGitHub({ project, onUpdate }: ProjectGitHubProps) {
   const [repoInfo, setRepoInfo] = useState<GitHubRepo | null>(null);
   const [commits, setCommits] = useState<GitHubCommit[]>([]);
+  const [branches, setBranches] = useState<GitHubBranch[]>([]);
+  const [collaborators, setCollaborators] = useState<GitHubCollaborator[]>([]);
+  const [pullRequests, setPullRequests] = useState<GitHubPullRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingUrl, setEditingUrl] = useState(false);
@@ -32,6 +35,9 @@ export default function ProjectGitHub({ project, onUpdate }: ProjectGitHubProps)
       } else {
         setRepoInfo(data.info);
         setCommits(data.commits);
+        setBranches(data.branches || []);
+        setCollaborators(data.collaborators || []);
+        setPullRequests(data.pulls || []);
       }
     } catch {
       setError('Failed to fetch GitHub data');
@@ -144,34 +150,128 @@ export default function ProjectGitHub({ project, onUpdate }: ProjectGitHubProps)
             </div>
           </div>
 
-          {/* Recent Commits */}
-          <div>
-            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-on-surface-variant">
-              <GitCommit size={16} /> Recent Commits
-            </h3>
-            <div className="bg-surface-container rounded-xl border border-outline-variant/10 divide-y divide-outline-variant/10">
-              {commits.slice(0, 8).map((commit) => (
-                <a
-                  key={commit.sha}
-                  href={commit.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 px-4 py-3 hover:bg-surface-container-high/50 transition-colors group"
-                >
-                  <code className="text-[0.625rem] text-primary font-mono mt-0.5 flex-shrink-0">
-                    {commit.sha.slice(0, 7)}
-                  </code>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate group-hover:text-primary transition-colors">
-                      {commit.commit.message.split('\n')[0]}
-                    </p>
-                    <p className="text-[0.625rem] text-on-surface-variant mt-0.5">
-                      {commit.commit.author.name} • {new Date(commit.commit.author.date).toLocaleDateString()}
-                    </p>
-                  </div>
-                </a>
-              ))}
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            
+            {/* Left Column: Commits & PRs */}
+            <div className="space-y-6">
+              {/* Recent Commits */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-on-surface-variant">
+                  <GitCommit size={16} /> Recent Commits
+                </h3>
+                <div className="bg-surface-container rounded-xl border border-outline-variant/10 divide-y divide-outline-variant/10">
+                  {commits.slice(0, 5).map((commit) => (
+                    <a
+                      key={commit.sha}
+                      href={commit.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-surface-container-high/50 transition-colors group"
+                    >
+                      <code className="text-[0.625rem] text-primary font-mono mt-0.5 shrink-0">
+                        {commit.sha.slice(0, 7)}
+                      </code>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm truncate group-hover:text-primary transition-colors">
+                          {commit.commit.message.split('\n')[0]}
+                        </p>
+                        <p className="text-[0.625rem] text-on-surface-variant mt-0.5">
+                          {commit.commit.author.name} • {new Date(commit.commit.author.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                  {commits.length === 0 && (
+                    <div className="px-4 py-8 text-center text-sm text-on-surface-variant">No recent commits</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Pull Requests */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-on-surface-variant">
+                  <GitPullRequest size={16} /> Open Pull Requests
+                </h3>
+                <div className="bg-surface-container rounded-xl border border-outline-variant/10 divide-y divide-outline-variant/10">
+                  {pullRequests.slice(0, 5).map((pr) => (
+                    <a
+                      key={pr.id}
+                      href={pr.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-surface-container-high/50 transition-colors group"
+                    >
+                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-0.5 shadow-sm">
+                        <img src={pr.user.avatar_url} alt={pr.user.login} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm truncate group-hover:text-primary transition-colors">
+                          {pr.title}
+                        </p>
+                        <p className="text-[0.625rem] text-on-surface-variant mt-0.5 flex gap-1.5 items-center">
+                          <span className="text-primary font-medium">#{pr.number}</span>
+                          <span>opened by {pr.user.login}</span>
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                  {pullRequests.length === 0 && (
+                    <div className="px-4 py-8 text-center text-sm text-on-surface-variant">No open pull requests</div>
+                  )}
+                </div>
+              </div>
             </div>
+
+            {/* Right Column: Branches & Collaborators */}
+            <div className="space-y-6">
+              {/* Branches */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-on-surface-variant">
+                  <GitBranch size={16} /> Active Branches
+                </h3>
+                <div className="bg-surface-container rounded-xl border border-outline-variant/10 p-2 flex flex-wrap gap-2">
+                  {branches.slice(0, 8).map((branch) => (
+                    <div key={branch.name} className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-lowest border border-outline-variant/15 rounded-lg text-xs hover:border-primary/30 transition-colors">
+                      <GitBranch size={12} className="text-on-surface-variant" />
+                      <span className="font-mono text-[0.6875rem]">{branch.name}</span>
+                    </div>
+                  ))}
+                  {branches.length === 0 && (
+                    <div className="w-full py-6 text-center text-sm text-on-surface-variant">No branches found</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Collaborators / Contributors */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-on-surface-variant">
+                  <Users size={16} /> Top Contributors
+                </h3>
+                <div className="bg-surface-container rounded-xl border border-outline-variant/10 p-4 flex flex-wrap gap-3">
+                  {collaborators.map((user) => (
+                    <a
+                      key={user.login}
+                      href={user.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex flex-col items-center gap-1.5 w-14"
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm group-hover:ring-2 group-hover:ring-primary/40 transition-all group-hover:-translate-y-1">
+                        <img src={user.avatar_url} alt={user.login} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="text-[0.625rem] text-on-surface-variant text-center truncate w-full group-hover:text-primary transition-colors">
+                        {user.login}
+                      </span>
+                    </a>
+                  ))}
+                  {collaborators.length === 0 && (
+                    <div className="w-full py-4 text-center text-sm text-on-surface-variant">No contributors found</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
           </div>
         </>
       )}

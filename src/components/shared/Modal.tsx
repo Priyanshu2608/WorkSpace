@@ -50,7 +50,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
       className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-200 ${show ? 'opacity-100' : 'opacity-0'}`}
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 " />
       <div
         className={`relative w-full ${sizeClasses[size]} bg-surface-container-high rounded-xl border border-outline-variant/15 shadow-ambient transition-all duration-200 ${show ? 'scale-100' : 'scale-95'}`}
         onClick={(e) => e.stopPropagation()}
