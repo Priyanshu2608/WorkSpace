@@ -26,6 +26,7 @@ export async function GET(req: Request) {
     ]);
     return NextResponse.json({ info, commits, branches, collaborators, pulls });
   } catch (error) {
+    console.error('GitHub fetch failed:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch GitHub data' },
       { status: 500 }
