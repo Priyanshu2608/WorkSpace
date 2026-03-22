@@ -1,47 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #0b1326;
-  --color-surface-dim: #0b1326;
-  --color-surface-container-lowest: #060e20;
-  --color-surface-container-low: #131b2e;
-  --color-surface-container: #171f33;
-  --color-surface-container-high: #222a3d;
-  --color-surface-container-highest: #2d3449;
-  --color-surface-bright: #31394d;
+  --color-surface: #FAE3C8; /* True Cream */
+  --color-surface-dim: #f3ddb1;
+  --color-surface-container-lowest: #ffffff; /* pure white cards */
+  --color-surface-container-low: #fdfdfd;
+  --color-surface-container: #fffaf0; /* very light cream for secondary cards */
+  --color-surface-container-high: #f5eedf;
+  --color-surface-container-highest: #eadac6;
+  --color-surface-bright: #ffffff;
 
-  --color-primary: #c0c1ff;
-  --color-primary-container: #4b4dd8;
-  --color-primary-fixed: #e1e0ff;
-  --color-on-primary: #1000a9;
-  --color-on-primary-container: #d9d8ff;
-  --color-inverse-primary: #494bd6;
+  --color-primary: #4192a5;
+  --color-primary-container: #2b7080;
+  --color-primary-fixed: #e2f6fb;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ffffff;
+  --color-inverse-primary: #94d8eb;
 
-  --color-secondary: #c3c0ff;
-  --color-secondary-container: #413f82;
-  --color-on-secondary: #2a276a;
+  --color-secondary: #f47a61;
+  --color-secondary-container: #d95e46;
+  --color-on-secondary: #ffffff;
 
-  --color-tertiary: #ffb695;
-  --color-tertiary-container: #a44100;
-  --color-on-tertiary: #571f00;
+  --color-tertiary: #fae5ba;
+  --color-tertiary-container: #dfc89d;
+  --color-on-tertiary: #5c4820;
 
-  --color-on-surface: #dae2fd;
-  --color-on-surface-variant: #c7c4d8;
-  --color-outline: #918fa1;
-  --color-outline-variant: #464555;
+  --color-info: #88ced0;
 
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-  --color-on-error: #690005;
+  --color-on-surface: #1a202c; /* Making this truly black/very dark */
+  --color-on-surface-variant: #4a5568; /* Making variants bolder/darker */
+  --color-outline: #cbd5e0;
+  --color-outline-variant: #e2e8f0;
 
-  --color-success: #7dd98b;
-  --color-warning: #f5c842;
-  --color-info: #7dc4e4;
+  --color-error: #f47a61;
+  --color-error-container: #ffedea;
+  --color-on-error: #ffffff;
 
-  --font-family-display: 'Manrope', sans-serif;
-  --font-family-body: 'Inter', sans-serif;
+  --color-success: #88ced0;
+  --color-warning: #fae5ba;
+
+  --font-family-display: 'Outfit', sans-serif;
+  --font-family-body: 'Plus Jakarta Sans', sans-serif;
 }
 
 * {
@@ -49,11 +50,12 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   font-family: var(--font-family-body);
+  font-weight: 500; /* Bolder descriptive text globally */
   background-color: var(--color-surface);
   color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
@@ -62,7 +64,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-display);
-  font-weight: 600;
+  font-weight: 800; /* Making headings bolder */
 }
 
 /* Scrollbar styling */

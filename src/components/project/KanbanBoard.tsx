@@ -135,11 +135,11 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
     });
   };
 
-  const columnConfig: Record<string, { accent: string; dotColor: string; accentClass: string }> = {
-    'Backlog': { accent: 'border-outline-variant/40', dotColor: 'bg-outline-variant', accentClass: 'col-accent-backlog' },
-    'In Progress': { accent: 'border-warning/40', dotColor: 'bg-warning', accentClass: 'col-accent-inprogress' },
-    'Review': { accent: 'border-primary/40', dotColor: 'bg-primary', accentClass: 'col-accent-review' },
-    'Done': { accent: 'border-success/40', dotColor: 'bg-success', accentClass: 'col-accent-done' },
+  const columnConfig: Record<string, { bgClass: string, accent: string; dotColor: string; accentClass: string }> = {
+    'Backlog': { bgClass: 'bg-surface-container/50', accent: 'border-outline-variant/40', dotColor: 'bg-outline-variant', accentClass: 'col-accent-backlog' },
+    'In Progress': { bgClass: 'bg-warning/10', accent: 'border-warning/40', dotColor: 'bg-warning', accentClass: 'col-accent-inprogress' },
+    'Review': { bgClass: 'bg-primary/10', accent: 'border-primary/40', dotColor: 'bg-primary', accentClass: 'col-accent-review' },
+    'Done': { bgClass: 'bg-success/10', accent: 'border-success/40', dotColor: 'bg-success', accentClass: 'col-accent-done' },
   };
 
   const priorityClass: Record<string, string> = {
@@ -244,8 +244,8 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                           {...provided.droppableProps}
                           className={`space-y-2 min-h-[100px] p-1.5 rounded-xl transition-all duration-200 ${
                             snapshot.isDraggingOver
-                              ? `bg-primary/5 border border-dashed ${config.accent} animate-column-pulse`
-                              : 'border border-transparent'
+                              ? `bg-primary/10 border border-dashed ${config.accent} animate-column-pulse`
+                              : `${config.bgClass} border border-transparent`
                           }`}
                         >
                           {columnFeatures.map((feature, index) => {
