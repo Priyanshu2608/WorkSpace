@@ -99,24 +99,24 @@ function WireframesContent() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="btn-gradient px-4 py-2.5 rounded-xl text-sm font-medium inline-flex items-center gap-2"
+          className="btn-gradient px-5 py-2.5 rounded-2xl text-[0.9375rem] font-bold inline-flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
         >
-          <Plus size={16} /> New Board
+          <Plus size={18} /> New Board
         </button>
       </div>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-32 bg-surface-container rounded-xl animate-pulse" />
+            <div key={i} className="h-32 bg-surface-container rounded-3xl animate-pulse" />
           ))}
         </div>
       ) : wireframes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {wireframes.map((wf, idx) => (
             <div
               key={wf.id}
-              className="bg-surface-container rounded-xl p-5 border border-outline-variant/10 hover:border-primary/30 transition-all group cursor-pointer animate-fade-in"
+              className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/10 hover:border-primary/30 hover:shadow-md transition-all duration-300 group cursor-pointer animate-fade-in shadow-sm hover:-translate-y-1"
               style={{ animationDelay: `${idx * 60}ms` }}
               onClick={() => setSelected(wf)}
             >
@@ -139,14 +139,17 @@ function WireframesContent() {
           ))}
         </div>
       ) : (
-        <div className="bg-surface-container rounded-xl p-12 text-center border border-outline-variant/10">
-          <Pencil size={40} className="mx-auto text-on-surface-variant mb-3" />
-          <p className="text-on-surface-variant">No wireframes yet</p>
+        <div className="bg-surface-container-lowest rounded-3xl p-16 text-center border border-dashed border-outline-variant/30 shadow-sm mt-8">
+          <div className="w-16 h-16 bg-surface-container rounded-2xl flex items-center justify-center mx-auto mb-5 border border-outline-variant/10">
+            <Pencil size={32} className="text-primary/60" />
+          </div>
+          <p className="text-on-surface text-lg font-bold font-family-display mt-4">No wireframes yet</p>
+          <p className="text-on-surface-variant text-sm mt-2 max-w-sm mx-auto">Start sketching your ideas by creating your first board.</p>
           <button
             onClick={() => setShowCreate(true)}
-            className="mt-3 text-sm text-primary hover:text-primary-fixed transition-colors inline-flex items-center gap-1"
+            className="mt-8 btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2"
           >
-            <Plus size={14} /> Create your first board
+            <Plus size={18} /> Create your first board
           </button>
         </div>
       )}
@@ -158,12 +161,12 @@ function WireframesContent() {
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && create()}
             placeholder="Board name"
-            className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
+            className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none"
             autoFocus
           />
-          <div className="flex justify-end gap-3">
-            <button onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-bright transition-colors">Cancel</button>
-            <button onClick={create} disabled={!newName.trim()} className="btn-gradient px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50">Create</button>
+          <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+            <button onClick={() => setShowCreate(false)} className="px-5 py-2.5 text-[0.9375rem] font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-2xl transition-colors">Cancel</button>
+            <button onClick={create} disabled={!newName.trim()} className="btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold disabled:opacity-50 shadow-md hover:shadow-lg transition-all">Create</button>
           </div>
         </div>
       </Modal>

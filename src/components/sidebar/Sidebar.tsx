@@ -54,28 +54,28 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen w-[260px] bg-surface-container-low border-r border-outline-variant/10 z-40 flex flex-col transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 left-0 h-screen w-[260px] bg-[#f2fbfa] border-r border-[#c4e8e1] z-40 flex flex-col transition-transform duration-300 lg:translate-x-0 shadow-md ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo */}
-        <div className="px-5 py-6 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
-            <Sparkles size={18} className="text-white" />
+        <div className="px-5 py-7 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-info flex items-center justify-center shadow-sm">
+            <Sparkles size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-base font-bold font-[family-name:var(--font-family-display)] text-on-surface tracking-tight">
+            <h1 className="text-lg font-extrabold font-[family-name:var(--font-family-display)] text-on-surface tracking-tight">
               WorkSpace
             </h1>
-            <p className="text-[0.625rem] text-on-surface-variant uppercase tracking-[0.1em] font-medium">
-              Premium Curator
+            <p className="text-[0.6875rem] text-on-surface-variant/80 uppercase tracking-widest font-semibold">
+              Premium Planner
             </p>
           </div>
         </div>
 
         {/* Main nav */}
-        <nav className="flex-1 px-3 mt-2">
-          <div className="space-y-1">
+        <nav className="flex-1 px-4 mt-4">
+          <div className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = pathname === item.href || 
                 (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -84,16 +84,16 @@ export default function Sidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                  className={`flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[0.9375rem] font-semibold transition-all duration-300 group ${
                     isActive
-                      ? 'bg-primary-container/20 text-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
                   }`}
                 >
                   <item.icon
-                    size={19}
-                    className={`transition-colors ${
-                      isActive ? 'text-primary' : 'text-on-surface-variant group-hover:text-on-surface'
+                    size={20}
+                    className={`transition-transform duration-300 ${
+                      isActive ? 'text-primary scale-110' : 'text-on-surface-variant/70 group-hover:text-primary group-hover:scale-110'
                     }`}
                   />
                   {item.label}
@@ -104,14 +104,14 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom section */}
-        <div className="px-3 pb-4 space-y-1 border-t border-outline-variant/10 pt-3">
+        <div className="px-4 pb-6 space-y-1.5 border-t border-outline-variant/20 pt-4">
           {bottomItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+              className="flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[0.9375rem] font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-300 group"
             >
-              <item.icon size={19} />
+              <item.icon size={20} className="text-on-surface-variant/70 group-hover:text-on-surface transition-transform duration-300 group-hover:scale-110" />
               {item.label}
             </Link>
           ))}

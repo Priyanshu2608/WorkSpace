@@ -236,7 +236,7 @@ export default function TasksPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-[#ff5555]';
+      case 'Critical': return 'bg-secondary-container';
       case 'High': return 'bg-error';
       case 'Medium': return 'bg-warning';
       case 'Low': return 'bg-info';
@@ -246,10 +246,10 @@ export default function TasksPage() {
 
   const getPriorityTextColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'text-[#ff5555]';
+      case 'Critical': return 'text-secondary-container';
       case 'High': return 'text-error';
-      case 'Medium': return 'text-warning';
-      case 'Low': return 'text-info';
+      case 'Medium': return 'text-[#5c4820]'; // on-warning
+      case 'Low': return 'text-[#3a7577]';    // dark teal for info
       default: return 'text-on-surface-variant';
     }
   };
@@ -262,12 +262,12 @@ export default function TasksPage() {
     return (
       <div
         key={task.id}
-        className={`group flex flex-col sm:flex-row sm:items-center gap-4 px-4 py-3 bg-surface-container-lowest rounded-xl border transition-all animate-fade-in ${
+        className={`group flex flex-col sm:flex-row sm:items-center gap-4 px-5 py-4 bg-surface-container-lowest rounded-2xl border transition-all animate-fade-in ${
           task.done 
-            ? 'border-outline-variant/5 opacity-60' 
+            ? 'border-outline-variant/10 opacity-60' 
             : overdue 
-              ? 'border-error/30 bg-error/5 shadow-[0_0_15px_rgba(255,180,171,0.03)]' 
-              : 'border-outline-variant/10 hover:border-outline-variant/30 hover:shadow-ambient hover:bg-surface-container/30'
+              ? 'border-error/30 bg-error/5 shadow-sm' 
+              : 'border-outline-variant/20 hover:border-outline-variant/40 hover:shadow-md hover:-translate-y-0.5'
         }`}
       >
         <div className="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
@@ -409,9 +409,9 @@ export default function TasksPage() {
           
           <button
             onClick={() => setShowModal(true)}
-            className="btn-gradient px-4 py-2 rounded-xl text-sm font-bold inline-flex items-center gap-2 shadow-sm ml-1"
+            className="btn-gradient px-4 py-2 rounded-2xl text-[0.9375rem] font-bold inline-flex items-center gap-2 shadow-sm ml-1 hover:shadow-md transition-all duration-300"
           >
-            <Plus size={16} /> New Issue
+            <Plus size={18} /> New Issue
           </button>
         </div>
       </div>
@@ -481,7 +481,7 @@ export default function TasksPage() {
           </div>
         )
       ) : (
-        <div className="bg-surface-container-lowest rounded-3xl p-16 text-center border border-dashed border-outline-variant/20 shadow-sm mt-8">
+        <div className="bg-surface-container-lowest rounded-3xl p-16 text-center border border-dashed border-outline-variant/30 shadow-sm mt-8">
           <div className="w-16 h-16 bg-surface-container rounded-2xl flex items-center justify-center mx-auto mb-5 border border-outline-variant/10">
             <CheckSquare size={32} className="text-primary/60" />
           </div>
@@ -494,7 +494,7 @@ export default function TasksPage() {
           {tasks.length === 0 && (
              <button
               onClick={() => setShowModal(true)}
-              className="mt-8 btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm"
+              className="mt-8 btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold shadow-md hover:shadow-lg transition-all"
              >
                Create New Issue
              </button>
@@ -589,14 +589,14 @@ export default function TasksPage() {
           <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-outline-variant/10">
             <button
               onClick={() => setShowModal(false)}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container transition-colors"
+              className="px-5 py-2.5 rounded-2xl text-[0.9375rem] font-bold text-on-surface hover:bg-surface-container transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={createTask}
               disabled={!form.title.trim()}
-              className="btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 shadow-sm"
+              className="btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold disabled:opacity-50 shadow-md hover:shadow-lg transition-all"
             >
               Create Issue
             </button>

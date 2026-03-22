@@ -101,21 +101,21 @@ function ProjectsContent() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="btn-gradient px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2 shadow-sm hover:shadow-primary/20 hover:-translate-y-0.5 transition-all"
+          className="btn-gradient px-5 py-2.5 rounded-2xl text-[0.9375rem] font-bold inline-flex items-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
         >
           <Plus size={18} /> New Project
         </button>
       </div>
 
       {/* Filter bar */}
-      <div className="flex items-center gap-3 flex-wrap justify-between bg-surface-container rounded-2xl p-2 border border-outline-variant/10 shadow-sm">
+      <div className="flex items-center gap-3 flex-wrap justify-between bg-surface-container rounded-3xl p-2 border border-outline-variant/10 shadow-sm">
         {/* Status filters */}
         <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar flex-nowrap">
           {['All', ...PROJECT_STATUSES].map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-2xl text-[0.9375rem] font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
                 statusFilter === s
                   ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
                   : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high border border-transparent'
@@ -178,7 +178,7 @@ function ProjectsContent() {
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="group flex flex-col bg-surface-container-lowest rounded-2xl border border-outline-variant/10 hover:border-primary/30 hover:shadow-ambient transition-all duration-300 animate-fade-in overflow-hidden relative"
+                  className="group flex flex-col bg-surface-container-lowest rounded-3xl border border-outline-variant/10 hover:border-primary/30 hover:shadow-md transition-all duration-300 animate-fade-in overflow-hidden relative shadow-sm hover:-translate-y-1"
                   style={{ animationDelay: `${idx * 40}ms` }}
                 >
                   {/* Premium Auto-Generated Cover */}
@@ -226,7 +226,7 @@ function ProjectsContent() {
           </div>
         ) : (
           /* Proper Database Table View (Notion / Linear Style) */
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 overflow-hidden shadow-sm animate-fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 overflow-hidden shadow-sm animate-fade-in">
              <div className="overflow-x-auto">
                <table className="w-full text-left border-collapse">
                  <thead>
@@ -296,7 +296,7 @@ function ProjectsContent() {
           {!search && statusFilter === 'All' && (
             <button
               onClick={() => setShowModal(true)}
-              className="mt-8 btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm"
+              className="mt-8 btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold shadow-md hover:shadow-lg transition-all"
             >
               Construct Project
             </button>
@@ -320,7 +320,7 @@ function ProjectsContent() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="e.g. Next.js SaaS Boilerplate"
-              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
+              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               autoFocus
             />
           </div>
@@ -333,7 +333,7 @@ function ProjectsContent() {
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="What are we building?"
               rows={3}
-              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none resize-none"
+              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none resize-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -344,7 +344,7 @@ function ProjectsContent() {
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
+                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               >
                 {PROJECT_STATUSES.map((s) => (
                   <option key={s} value={s}>{s}</option>
@@ -360,7 +360,7 @@ function ProjectsContent() {
                 value={form.tags}
                 onChange={(e) => setForm({ ...form, tags: e.target.value })}
                 placeholder="react, typescript..."
-                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
+                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               />
             </div>
           </div>
@@ -375,21 +375,21 @@ function ProjectsContent() {
                  value={form.githubUrl}
                  onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
                  placeholder="https://github.com/user/repo"
-                 className="w-full pl-11 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
+                 className="w-full pl-11 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-2xl text-sm font-medium focus:border-primary/40 focus:outline-none"
                />
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
             <button
               onClick={() => setShowModal(false)}
-              className="px-5 py-2.5 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-xl transition-colors"
+              className="px-5 py-2.5 text-[0.9375rem] font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-2xl transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={createProject}
               disabled={!form.name.trim()}
-              className="btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 shadow-sm"
+              className="btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold disabled:opacity-50 shadow-md hover:shadow-lg transition-all"
             >
               Initialize Project
             </button>

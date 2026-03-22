@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-[#ff5555]';
+      case 'Critical': return 'bg-secondary-container';
       case 'High': return 'bg-error';
       case 'Medium': return 'bg-warning';
       case 'Low': return 'bg-info';
@@ -99,9 +99,9 @@ export default function DashboardPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Done': return 'bg-success/20 text-success';
-      case 'In Progress': return 'bg-primary/20 text-primary';
-      case 'Planning': return 'bg-warning/20 text-warning';
+      case 'Done': return 'bg-success/20 text-[#3a7577]';
+      case 'In Progress': return 'bg-primary/15 text-primary-container';
+      case 'Planning': return 'bg-warning/40 text-on-tertiary';
       default: return 'bg-outline-variant/20 text-on-surface-variant';
     }
   };
@@ -140,14 +140,14 @@ export default function DashboardPage() {
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
-          <Link href="/projects?new=true" className="px-5 py-2.5 rounded-xl text-sm font-medium bg-surface-container border border-outline-variant/10 text-on-surface hover:border-primary/40 hover:bg-surface-container-high transition-all flex items-center gap-2">
-            <FolderOpen size={16} /> <span className="hidden sm:inline">New</span> Project
+          <Link href="/projects?new=true" className="px-5 py-2.5 rounded-2xl text-[0.9375rem] font-semibold bg-surface-container-lowest border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:shadow-sm transition-all duration-300 flex items-center gap-2">
+            <FolderOpen size={18} className="text-primary"/> <span className="hidden sm:inline">New</span> Project
           </Link>
-          <Link href="/notes?new=true" className="px-5 py-2.5 rounded-xl text-sm font-medium bg-surface-container border border-outline-variant/10 text-on-surface hover:border-primary/40 hover:bg-surface-container-high transition-all flex items-center gap-2">
-            <StickyNote size={16} /> <span className="hidden sm:inline">New</span> Note
+          <Link href="/notes?new=true" className="px-5 py-2.5 rounded-2xl text-[0.9375rem] font-semibold bg-surface-container-lowest border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:shadow-sm transition-all duration-300 flex items-center gap-2">
+            <StickyNote size={18} className="text-info"/> <span className="hidden sm:inline">New</span> Note
           </Link>
-          <Link href="/tasks" className="btn-gradient px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm hover:shadow-primary/20 hover:-translate-y-0.5 transition-all">
-            <Plus size={16} /> New Task
+          <Link href="/tasks" className="btn-gradient px-6 py-2.5 rounded-2xl text-[0.9375rem] font-bold flex items-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+            <Plus size={18} /> New Task
           </Link>
         </div>
       </div>
@@ -169,32 +169,32 @@ export default function DashboardPage() {
             </div>
             
             {stats?.dueTasks && stats.dueTasks.length > 0 ? (
-              <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 overflow-hidden shadow-sm">
-                <div className="divide-y divide-outline-variant/5">
+              <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div className="divide-y divide-outline-variant/20">
                   {stats.dueTasks.slice(0, 5).map((task) => (
-                    <div key={task.id} className="group flex items-center justify-between p-4 px-5 hover:bg-surface-container/40 transition-colors">
+                    <div key={task.id} className="group flex items-center justify-between p-4 px-6 hover:bg-surface-container-high transition-colors">
                       <div className="flex items-start gap-4">
-                        <div className={`mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${getPriorityColor(task.priority)} shadow-sm ring-2 ring-background`} />
+                        <div className={`mt-1.5 w-3 h-3 rounded-full flex-shrink-0 ${getPriorityColor(task.priority)} shadow-sm`} />
                         <div>
-                          <p className={`text-sm font-medium ${task.done ? 'line-through text-on-surface-variant/50' : 'text-on-surface'}`}>
+                          <p className={`text-[0.9375rem] font-semibold ${task.done ? 'line-through text-on-surface-variant/50' : 'text-on-surface'}`}>
                             {task.title}
                           </p>
-                          <p className="text-xs text-on-surface-variant/70 mt-1 flex items-center gap-1.5">
-                            <FolderOpen size={10} className="inline opacity-60" />
+                          <p className="text-xs text-on-surface-variant font-medium mt-1 flex items-center gap-1.5">
+                            <FolderOpen size={12} className="inline opacity-60 text-primary" />
                             {task.feature?.project.name || task.project?.name || 'Global Workspace'}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 px-2">
+                      <div className="flex items-center gap-4 pl-4 pr-1">
                          {task.dueDate && (
-                            <span className={`text-[0.6875rem] font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 ${
+                            <span className={`text-[0.75rem] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm ${
                                new Date(task.dueDate) < new Date() && !task.done 
-                                 ? 'text-error border border-error/20 bg-error/5' 
+                                 ? 'text-error border border-error/20 bg-error/10' 
                                  : new Date(task.dueDate) <= new Date(Date.now() + 86400000)
-                                   ? 'text-warning border border-warning/20 bg-warning/5'
-                                   : 'text-on-surface-variant bg-surface-container'
+                                   ? 'text-on-tertiary border border-warning/50 bg-warning/30'
+                                   : 'text-on-surface-variant border border-outline-variant/30 bg-surface-container-high'
                              }`}>
-                               <Clock size={10} /> {formatDate(task.dueDate)}
+                               <Clock size={12} /> {formatDate(task.dueDate)}
                             </span>
                           )}
                       </div>
@@ -223,27 +223,27 @@ export default function DashboardPage() {
             </div>
 
             {stats?.recentProjects && stats.recentProjects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {stats.recentProjects.slice(0,4).map((project) => (
                   <Link
                     key={project.id}
                     href={`/projects/${project.id}`}
-                    className="group bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/10 hover:border-primary/30 hover:shadow-md transition-all duration-300"
+                    className="group bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant/30 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-semibold text-base font-[family-name:var(--font-family-display)] group-hover:text-primary transition-colors line-clamp-1 pr-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="font-bold text-[1.0625rem] font-[family-name:var(--font-family-display)] group-hover:text-primary transition-colors line-clamp-1 pr-4">
                         {project.name}
                       </h3>
-                      <span className={`px-2.5 py-1 flex-shrink-0 text-[0.625rem] font-bold tracking-wider uppercase rounded-full ${getStatusColor(project.status)}`}>
+                      <span className={`px-2.5 py-1 flex-shrink-0 text-[0.6875rem] font-bold tracking-wider uppercase rounded-full shadow-sm ${getStatusColor(project.status)}`}>
                          {project.status}
                       </span>
                     </div>
-                    <p className="text-xs text-on-surface-variant/80 line-clamp-2 leading-relaxed min-h-[32px]">
+                    <p className="text-[0.875rem] text-on-surface-variant font-medium line-clamp-2 leading-relaxed min-h-[40px]">
                       {project.description || 'No project description provided.'}
                     </p>
-                    <div className="mt-5 pt-3 border-t border-outline-variant/5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-on-surface-variant/60 font-medium">
-                      <span className="flex items-center gap-1.5"><CheckSquare size={12}/> {project._count.features} Features</span>
-                      <span className="flex items-center gap-1.5"><Clock size={12}/> {new Date(project.updatedAt).toLocaleDateString()}</span>
+                    <div className="mt-5 pt-4 border-t border-outline-variant/20 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-on-surface-variant font-bold uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5"><CheckSquare size={14} className="text-primary"/> {project._count.features} Features</span>
+                      <span className="flex items-center gap-1.5"><Clock size={14} className="text-secondary"/> min ago</span>
                     </div>
                   </Link>
                 ))}
@@ -261,55 +261,55 @@ export default function DashboardPage() {
 
         {/* Right Column: Analytics Sidebar */}
         <div className="space-y-6">
-          <section className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/10 shadow-sm sticky top-6">
-            <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-6 border-b border-outline-variant/10 pb-4">Workspace Pulse</h3>
+          <section className="bg-surface-container-lowest rounded-3xl p-7 border border-outline-variant/30 shadow-sm sticky top-8">
+            <h3 className="text-xs font-black text-on-surface-variant uppercase tracking-[0.15em] mb-7 border-b border-outline-variant/20 pb-4">Workspace Pulse</h3>
             
             {/* Mini Stat Grid */}
             <div className="grid grid-cols-2 gap-y-8 gap-x-4">
               <div>
-                <p className="text-3xl font-bold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalProjects ?? 0}</p>
-                <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1.5 font-medium"><FolderOpen size={12}/> Projects</p>
+                <p className="text-4xl font-extrabold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalProjects ?? 0}</p>
+                <p className="text-xs text-on-surface-variant mt-2.5 flex items-center gap-1.5 font-bold uppercase tracking-wider"><FolderOpen size={14} className="text-primary"/> Projects</p>
               </div>
               <div>
-                 <p className="text-3xl font-bold font-[family-name:var(--font-family-display)] text-primary leading-none">{stats?.openTasks ?? 0}</p>
-                 <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1.5 font-medium"><CheckSquare size={12}/> Active Tasks</p>
+                 <p className="text-4xl font-extrabold font-[family-name:var(--font-family-display)] text-primary leading-none">{stats?.openTasks ?? 0}</p>
+                 <p className="text-xs text-on-surface-variant mt-2.5 flex items-center gap-1.5 font-bold uppercase tracking-wider"><CheckSquare size={14} className="text-error"/> Tasks</p>
               </div>
               <div>
-                <p className="text-2xl font-semibold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalNotes ?? 0}</p>
-                <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1.5 font-medium"><StickyNote size={12}/> Notes</p>
+                <p className="text-3xl font-extrabold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalNotes ?? 0}</p>
+                <p className="text-xs text-on-surface-variant mt-2.5 flex items-center gap-1.5 font-bold uppercase tracking-wider"><StickyNote size={14} className="text-info"/> Notes</p>
               </div>
               <div>
-                 <p className="text-2xl font-semibold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalWireframes ?? 0}</p>
-                 <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1.5 font-medium"><Pencil size={12}/> Wireframes</p>
+                 <p className="text-3xl font-extrabold font-[family-name:var(--font-family-display)] text-on-surface leading-none">{stats?.totalWireframes ?? 0}</p>
+                 <p className="text-xs text-on-surface-variant mt-2.5 flex items-center gap-1.5 font-bold uppercase tracking-wider"><Pencil size={14} className="text-warning"/> Boards</p>
               </div>
             </div>
             
             {/* Priority Breakdown */}
             {stats && stats.openTasks > 0 && (
-              <div className="mt-8 pt-6 border-t border-outline-variant/10">
-                <h3 className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-5">Task Priority</h3>
+              <div className="mt-8 pt-6 border-t border-outline-variant/20">
+                <h3 className="text-[0.6875rem] font-black text-on-surface-variant uppercase tracking-widest mb-5">Task Priority</h3>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between group">
-                    <span className="text-sm font-medium flex items-center gap-2.5 text-on-surface-variant group-hover:text-on-surface transition-colors">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#ff5555] shadow-sm"/> Critical
+                  <div className="flex items-center justify-between group cursor-default">
+                    <span className="text-[0.9375rem] font-semibold flex items-center gap-3 text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      <div className="w-3 h-3 rounded-full bg-secondary-container shadow-sm"/> Critical
                     </span>
                     <span className="font-bold text-on-surface">{stats.tasksByPriority.critical}</span>
                   </div>
-                  <div className="flex items-center justify-between group">
-                    <span className="text-sm font-medium flex items-center gap-2.5 text-on-surface-variant group-hover:text-on-surface transition-colors">
-                      <div className="w-2.5 h-2.5 rounded-full bg-error shadow-sm"/> High
+                  <div className="flex items-center justify-between group cursor-default">
+                    <span className="text-[0.9375rem] font-semibold flex items-center gap-3 text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      <div className="w-3 h-3 rounded-full bg-error shadow-sm"/> High
                     </span>
                     <span className="font-bold text-on-surface">{stats.tasksByPriority.high}</span>
                   </div>
-                  <div className="flex items-center justify-between group">
-                    <span className="text-sm font-medium flex items-center gap-2.5 text-on-surface-variant group-hover:text-on-surface transition-colors">
-                      <div className="w-2.5 h-2.5 rounded-full bg-warning shadow-sm"/> Medium
+                  <div className="flex items-center justify-between group cursor-default">
+                    <span className="text-[0.9375rem] font-semibold flex items-center gap-3 text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      <div className="w-3 h-3 rounded-full bg-warning shadow-sm"/> Medium
                     </span>
                     <span className="font-bold text-on-surface">{stats.tasksByPriority.medium}</span>
                   </div>
-                  <div className="flex items-center justify-between group">
-                    <span className="text-sm font-medium flex items-center gap-2.5 text-on-surface-variant group-hover:text-on-surface transition-colors">
-                      <div className="w-2.5 h-2.5 rounded-full bg-info shadow-sm"/> Low
+                  <div className="flex items-center justify-between group cursor-default">
+                    <span className="text-[0.9375rem] font-semibold flex items-center gap-3 text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      <div className="w-3 h-3 rounded-full bg-info shadow-sm"/> Low
                     </span>
                     <span className="font-bold text-on-surface">{stats.tasksByPriority.low}</span>
                   </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Search, Trash2, Clock, Save, BookOpen, Lightbulb, CalendarDays, ArrowLeft, MoreVertical } from 'lucide-react';
+import { Plus, Search, Trash2, Clock, Save, BookOpen, Lightbulb, CalendarDays, ArrowLeft, MoreVertical, Sparkles } from 'lucide-react';
 import { Note } from '@/types';
 import Modal from '@/components/shared/Modal';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
@@ -248,15 +248,15 @@ function NotesContent() {
               return (
               <div
                 key={note.id}
-                className="group break-inside-avoid flex flex-col bg-surface-container-lowest hover:bg-surface-container-high rounded-[1.5rem] p-6 lg:p-7 cursor-pointer border border-outline-variant/15 hover:border-primary/40 transition-all duration-300 relative shadow-sm hover:shadow-ambient"
+                className="group break-inside-avoid flex flex-col bg-surface-container-lowest hover:bg-surface-container-high rounded-3xl p-6 lg:p-7 cursor-pointer border border-outline-variant/15 hover:border-primary/40 transition-all duration-300 relative shadow-sm hover:shadow-ambient"
                 onClick={() => { setSelectedNote(note); setContent(note.content); }}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2.5">
-                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 shadow-sm">
                         <Icon size={14} />
                      </div>
-                     <h3 className="font-bold text-lg leading-tight line-clamp-2 text-on-surface">{note.title || 'Untitled Note'}</h3>
+                     <h3 className="font-bold text-lg leading-tight line-clamp-2 text-on-surface group-hover:text-primary transition-colors">{note.title || 'Untitled Note'}</h3>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowDelete(note.id); }}
