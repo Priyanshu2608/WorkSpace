@@ -10,6 +10,8 @@ import {
   Plus,
   ArrowRight,
   Clock,
+  Github,
+  GitPullRequest,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -45,6 +47,14 @@ interface DashboardStats {
     medium: number;
     low: number;
   };
+  hasGithubToken: boolean;
+  githubPullRequests: Array<{
+    id: number;
+    title: string;
+    html_url: string;
+    repository_url: string;
+    created_at: string;
+  }>;
 }
 
 export default function DashboardPage() {
@@ -253,6 +263,48 @@ export default function DashboardPage() {
                  <FolderOpen size={32} className="mx-auto text-on-surface-variant/40 mb-3" />
                  <p className="text-on-surface-variant text-sm font-medium">Your workspace is empty</p>
                  <button className="text-primary text-sm font-medium mt-2 hover:underline">Create a new project</button>
+              </div>
+            )}
+          </section>
+
+          {/* GitHub Pull Requests */}
+          <section>
+            <div className="flex items-center justify-between mb-5 px-1">
+              <h2 className="text-lg font-semibold font-[family-name:var(--font-family-display)] text-on-surface flex items-center gap-2">
+                <Github size={18} /> My Pending Pull Requests
+              </h2>
+            </div>
+            
+            {stats && !stats.hasGithubToken ? (
+              <div className="bg-surface-container-lowest rounded-2xl p-8 text-center border border-dashed border-outline-variant/30 flex flex-col items-center">
+                 <Github size={32} className="text-on-surface-variant/40 mb-3" />
+                 <p className="text-on-surface-variant text-[0.9375rem] font-bold">You haven't linked your GitHub yet</p>
+                 <p className="text-on-surface-variant/70 text-sm mt-2 font-medium">Add your Personal Access Token in the Settings menu (bottom left) to see your pending pull requests here.</p>
+              </div>
+            ) : stats?.githubPullRequests && stats.githubPullRequests.length > 0 ? (
+              <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                 <div className="divide-y divide-outline-variant/20">
+                   {stats.githubPullRequests.slice(0, 5).map((pr) => (
+                     <a key={pr.id} href={pr.html_url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-4 p-4 px-6 hover:bg-surface-container-high transition-colors">
+                       <GitPullRequest size={18} className="text-success mt-0.5 flex-shrink-0" />
+                       <div className="min-w-0">
+                         <p className="text-[0.9375rem] font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
+                           {pr.title}
+                         </p>
+                         <div className="flex items-center gap-3 mt-1.5 text-[0.6875rem] uppercase tracking-wider text-on-surface-variant font-bold">
+                           <span className="flex items-center gap-1.5"><Github size={12} className="opacity-70 text-primary" /> {pr.repository_url.split('/').slice(-2).join('/')}</span>
+                           <span className="flex items-center gap-1.5"><Clock size={12} className="opacity-70" /> {new Date(pr.created_at).toLocaleDateString()}</span>
+                         </div>
+                       </div>
+                     </a>
+                   ))}
+                 </div>
+              </div>
+            ) : (
+              <div className="bg-surface-container-lowest rounded-2xl p-8 text-center border border-dashed border-outline-variant/20">
+                 <GitPullRequest size={32} className="mx-auto text-on-surface-variant/40 mb-3" />
+                 <p className="text-on-surface-variant text-sm font-medium">No pending pull requests!</p>
+                 <p className="text-on-surface-variant/70 text-xs mt-1">You have no open PRs authored by you at the moment.</p>
               </div>
             )}
           </section>

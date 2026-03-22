@@ -66,3 +66,14 @@ export async function getRepoPulls(owner: string, repo: string, token?: string |
   }
   return res.json();
 }
+
+export async function getUserPullRequests(token: string) {
+  const res = await fetch(`${GITHUB_API}/search/issues?q=is:open+is:pr+author:@me`, {
+    headers: getHeaders(token),
+  });
+  if (!res.ok) {
+    return [];
+  }
+  const data = await res.json();
+  return data.items || [];
+}
