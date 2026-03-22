@@ -53,6 +53,8 @@ function WireframesContent() {
 
   const saveWireframe = async (data: string) => {
     if (!selected) return;
+    setWireframes((prev) => prev.map((w) => w.id === selected.id ? { ...w, data } : w));
+    setSelected((prev) => prev ? { ...prev, data } : null);
     await fetch(`/api/wireframes/${selected.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -81,7 +83,7 @@ function WireframesContent() {
             <h2 className="text-lg font-semibold font-[family-name:var(--font-family-display)]">{selected.name}</h2>
           </div>
         </div>
-        <div className="h-[calc(100vh-180px)] rounded-xl overflow-hidden border border-outline-variant/10">
+        <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-xl overflow-hidden border border-outline-variant/10 relative z-10">
           <ExcalidrawWrapper initialData={selected.data} onSave={saveWireframe} />
         </div>
       </div>

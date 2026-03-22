@@ -5,12 +5,29 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Plus, FolderOpen, Search, LayoutGrid, List,
-  CheckCircle2, Clock, AlertCircle, ArrowUpRight
+  CheckCircle2, Clock, AlertCircle, ArrowRight, Github
 } from 'lucide-react';
 import { Project, PROJECT_STATUSES, timeAgo } from '@/types';
 import { StatusBadge } from '@/components/shared/Badge';
 import Modal from '@/components/shared/Modal';
 import { useToast } from '@/components/shared/Toast';
+
+// Premium deterministic gradient generator
+const getCoverGradient = (seedStr: string) => {
+  let hash = 0;
+  for (let i = 0; i < seedStr.length; i++) hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+  const h1 = Math.abs(hash) % 360;
+  const h2 = (h1 + 60) % 360;
+  return `linear-gradient(135deg, hsl(${h1}, 70%, 40%), hsl(${h2}, 80%, 20%))`;
+};
+
+// Deterministic emoji generator
+const getEmoji = (seedStr: string) => {
+  const emojis = ['🚀', '🌟', '⚡️', '🔥', '💎', '🎯', '💡', '🛠️', '📦', '🎨', '🧩', '📈'];
+  let hash = 0;
+  for (let i = 0; i < seedStr.length; i++) hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+  return emojis[Math.abs(hash) % emojis.length];
+};
 
 function ProjectsContent() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -67,145 +84,139 @@ function ProjectsContent() {
     return { featureCount: features.length, taskCount: allTasks.length, doneCount: doneTasks.length, progress };
   };
 
-  const statusCounts = {
+  const statusCounts: Record<string, number> = {
     All: projects.length,
     ...PROJECT_STATUSES.reduce((acc, s) => ({ ...acc, [s]: projects.filter(p => p.status === s).length }), {} as Record<string, number>)
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-8 animate-fade-in max-w-6xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-family-display">Projects</h1>
-          <p className="text-on-surface-variant text-sm mt-1">{projects.length} total projects</p>
+          <h1 className="text-3xl font-bold font-family-display flex items-center gap-3 tracking-tight">
+            <FolderOpen size={28} className="text-primary" /> Projects
+          </h1>
+          <p className="text-on-surface-variant text-sm mt-2 font-medium">Your workspace has {projects.length} total projects</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="btn-gradient px-4 py-2.5 rounded-xl text-sm font-medium inline-flex items-center gap-2"
+          className="btn-gradient px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2 shadow-sm hover:shadow-primary/20 hover:-translate-y-0.5 transition-all"
         >
-          <Plus size={16} /> New Project
+          <Plus size={18} /> New Project
         </button>
       </div>
 
       {/* Filter bar */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap justify-between bg-surface-container rounded-2xl p-2 border border-outline-variant/10 shadow-sm">
         {/* Status filters */}
-        <div className="flex items-center gap-1 bg-surface-container rounded-xl p-1">
+        <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar flex-nowrap">
           {['All', ...PROJECT_STATUSES].map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
                 statusFilter === s
-                  ? 'bg-primary/20 text-primary'
-                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50'
+                  ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high border border-transparent'
               }`}
             >
               {s}
-              <span className="ml-1.5 opacity-60">{statusCounts[s] || 0}</span>
+              <span className={`px-1.5 py-0.5 rounded-full text-[0.625rem] ${statusFilter === s ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                {statusCounts[s] || 0}
+              </span>
             </button>
           ))}
         </div>
 
-        <div className="flex-1" />
+        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          {/* Search */}
+          <div className="relative flex-1 sm:w-64">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
+            <input
+              type="text"
+              placeholder="Search library..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary/40 focus:outline-none transition-colors"
+            />
+          </div>
 
-        {/* Search */}
-        <div className="relative w-64">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 bg-surface-container border border-outline-variant/10 rounded-xl text-xs text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary/40 focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* View toggle */}
-        <div className="flex items-center gap-0.5 bg-surface-container rounded-lg p-0.5">
-          <button
-            onClick={() => setView('grid')}
-            className={`p-1.5 rounded-md transition-colors ${view === 'grid' ? 'bg-primary/20 text-primary' : 'text-on-surface-variant'}`}
-          >
-            <LayoutGrid size={14} />
-          </button>
-          <button
-            onClick={() => setView('list')}
-            className={`p-1.5 rounded-md transition-colors ${view === 'list' ? 'bg-primary/20 text-primary' : 'text-on-surface-variant'}`}
-          >
-            <List size={14} />
-          </button>
+          {/* View toggle */}
+          <div className="flex items-center gap-0.5 bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-1 flex-shrink-0">
+            <button
+              onClick={() => setView('grid')}
+              className={`p-2 rounded-lg transition-colors ${view === 'grid' ? 'bg-primary/10 text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+              title="Grid View"
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setView('list')}
+              className={`p-2 rounded-lg transition-colors ${view === 'list' ? 'bg-primary/10 text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+              title="List View"
+            >
+              <List size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Projects content */}
       {loading ? (
-        <div className={view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-2'}>
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className={`bg-surface-container rounded-xl animate-pulse ${view === 'grid' ? 'h-48' : 'h-16'}`} />
+        <div className={view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-2'}>
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className={`bg-surface-container rounded-2xl animate-pulse ${view === 'grid' ? 'h-[280px]' : 'h-16'}`} />
           ))}
         </div>
       ) : filtered.length > 0 ? (
         view === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((project, idx) => {
               const stats = getProjectStats(project);
               return (
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="group block bg-surface-container rounded-xl border border-outline-variant/10 hover:border-primary/25 transition-all duration-200 animate-fade-in overflow-hidden"
-                  style={{ animationDelay: `${idx * 50}ms` }}
+                  className="group flex flex-col bg-surface-container-lowest rounded-2xl border border-outline-variant/10 hover:border-primary/30 hover:shadow-ambient transition-all duration-300 animate-fade-in overflow-hidden relative"
+                  style={{ animationDelay: `${idx * 40}ms` }}
                 >
-                  {/* Progress bar at top */}
-                  <div className="progress-bar">
-                    <div className="progress-bar-fill" style={{ width: `${stats.progress}%` }} />
+                  {/* Premium Auto-Generated Cover */}
+                  <div className="h-28 w-full relative overflow-hidden shrink-0" style={{ background: getCoverGradient(project.name + project.id) }}>
+                     <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/40 to-transparent" />
+                     <div className="absolute bottom-3 left-4 text-3xl drop-shadow-lg scale-100 group-hover:scale-110 transition-transform origin-bottom-left">
+                       {getEmoji(project.name)}
+                     </div>
+                     <div className="absolute top-3 right-3">
+                       <StatusBadge status={project.status} />
+                     </div>
                   </div>
 
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <StatusBadge status={project.status} />
-                      <ArrowUpRight size={14} className="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-
-                    <h3 className="font-semibold font-family-display text-[0.9375rem] group-hover:text-primary transition-colors">
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-bold font-family-display text-lg group-hover:text-primary transition-colors pr-6">
                       {project.name}
                     </h3>
-                    <p className="text-xs text-on-surface-variant mt-1.5 line-clamp-2 leading-relaxed">
-                      {project.description || 'No description'}
+                    <p className="text-sm text-on-surface-variant mt-2 line-clamp-2 leading-relaxed flex-1">
+                      {project.description || 'No description provided.'}
                     </p>
 
-                    {/* Stats row */}
-                    <div className="flex items-center gap-4 mt-4 text-[0.6875rem] text-on-surface-variant">
-                      <span className="inline-flex items-center gap-1">
-                        <AlertCircle size={11} />
-                        {stats.featureCount} features
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <CheckCircle2 size={11} />
-                        {stats.doneCount}/{stats.taskCount} tasks
-                      </span>
-                      {stats.progress > 0 && (
-                        <span className="text-primary font-medium">{stats.progress}%</span>
-                      )}
+                    {/* Progress tracking */}
+                    <div className="mt-5 space-y-2">
+                       <div className="flex items-center justify-between text-xs font-bold text-on-surface-variant uppercase tracking-widest">
+                          <span>Progress</span>
+                          <span className={stats.progress === 100 ? 'text-success' : 'text-primary'}>{stats.progress}%</span>
+                       </div>
+                       <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-1000 ${stats.progress === 100 ? 'bg-success' : 'bg-primary'}`} style={{ width: `${stats.progress}%` }} />
+                       </div>
                     </div>
 
-                    {/* Tags */}
-                    {project.tags && (
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        {project.tags.split(',').slice(0, 3).map((tag) => (
-                          <span key={tag} className="px-2 py-0.5 bg-surface-bright rounded-full text-[0.625rem] text-on-surface-variant">
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-outline-variant/8">
-                      <span className="text-[0.625rem] text-on-surface-variant/50 inline-flex items-center gap-1">
-                        <Clock size={10} />
-                        {timeAgo(project.updatedAt)}
+                    <div className="flex flex-wrap items-center justify-between mt-5 pt-4 border-t border-outline-variant/10 text-xs text-on-surface-variant font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle2 size={12} /> {stats.doneCount}/{stats.taskCount} Tasks
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock size={12} /> {timeAgo(project.updatedAt)}
                       </span>
                     </div>
                   </div>
@@ -214,104 +225,126 @@ function ProjectsContent() {
             })}
           </div>
         ) : (
-          /* List View */
-          <div className="space-y-1">
-            {filtered.map((project, idx) => {
-              const stats = getProjectStats(project);
-              return (
-                <Link
-                  key={project.id}
-                  href={`/projects/${project.id}`}
-                  className="group flex items-center gap-4 bg-surface-container rounded-xl px-4 py-3.5 border border-outline-variant/10 hover:border-primary/20 transition-all animate-fade-in"
-                  style={{ animationDelay: `${idx * 30}ms` }}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5">
-                      <h3 className="font-medium text-sm group-hover:text-primary transition-colors truncate">
-                        {project.name}
-                      </h3>
-                      <StatusBadge status={project.status} />
-                    </div>
-                    {project.description && (
-                      <p className="text-xs text-on-surface-variant mt-0.5 truncate">{project.description}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-5 text-[0.6875rem] text-on-surface-variant shrink-0">
-                    <span>{stats.featureCount} features</span>
-                    <span>{stats.doneCount}/{stats.taskCount} tasks</span>
-                    {stats.progress > 0 && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 progress-bar">
-                          <div className="progress-bar-fill" style={{ width: `${stats.progress}%` }} />
-                        </div>
-                        <span className="text-primary font-medium">{stats.progress}%</span>
-                      </div>
-                    )}
-                    <span className="text-on-surface-variant/50">{timeAgo(project.updatedAt)}</span>
-                  </div>
-                  <ArrowUpRight size={14} className="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                </Link>
-              );
-            })}
+          /* Proper Database Table View (Notion / Linear Style) */
+          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 overflow-hidden shadow-sm animate-fade-in">
+             <div className="overflow-x-auto">
+               <table className="w-full text-left border-collapse">
+                 <thead>
+                   <tr className="border-b border-outline-variant/10 bg-surface-container-high/30">
+                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Project Name</th>
+                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant w-40 border-l border-outline-variant/5">Status</th>
+                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant w-48 border-l border-outline-variant/5">Progress</th>
+                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant w-32 border-l border-outline-variant/5 text-right">Features</th>
+                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant w-40 border-l border-outline-variant/5 text-right">Last Updated</th>
+                     <th className="px-4 py-3 border-l border-outline-variant/5 w-12"></th>
+                   </tr>
+                 </thead>
+                 <tbody className="divide-y divide-outline-variant/5">
+                   {filtered.map((project) => {
+                     const stats = getProjectStats(project);
+                     return (
+                       <tr key={project.id} className="group hover:bg-surface-container/40 transition-colors">
+                         <td className="px-5 py-4">
+                            <Link href={`/projects/${project.id}`} className="flex flex-col">
+                               <span className="font-semibold text-sm group-hover:text-primary transition-colors flex items-center gap-2">
+                                  <span>{getEmoji(project.name)}</span> {project.name}
+                               </span>
+                               {project.description && <span className="text-xs text-on-surface-variant truncate mt-1 max-w-[400px]">{project.description}</span>}
+                            </Link>
+                         </td>
+                         <td className="px-5 py-4 border-l border-outline-variant/5">
+                            <StatusBadge status={project.status} />
+                         </td>
+                         <td className="px-5 py-4 border-l border-outline-variant/5">
+                            <div className="flex items-center gap-3">
+                               <div className="flex-1 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                  <div className={`h-full rounded-full ${stats.progress === 100 ? 'bg-success' : 'bg-primary'}`} style={{ width: `${stats.progress}%` }} />
+                               </div>
+                               <span className="text-xs font-bold text-on-surface-variant min-w-[3ch] text-right">{stats.progress}%</span>
+                            </div>
+                         </td>
+                         <td className="px-5 py-4 border-l border-outline-variant/5 text-right text-sm font-medium text-on-surface-variant">
+                            {stats.featureCount}
+                         </td>
+                         <td className="px-5 py-4 border-l border-outline-variant/5 text-right text-xs text-on-surface-variant/70">
+                            {timeAgo(project.updatedAt)}
+                         </td>
+                         <td className="px-4 py-4 border-l border-outline-variant/5 text-right whitespace-nowrap">
+                            <Link href={`/projects/${project.id}`} className="p-2 text-on-surface-variant hover:text-primary transition-colors inline-block rounded-lg hover:bg-primary/10">
+                               <ArrowRight size={16} />
+                            </Link>
+                         </td>
+                       </tr>
+                     );
+                   })}
+                 </tbody>
+               </table>
+             </div>
           </div>
         )
       ) : (
-        <div className="bg-surface-container rounded-xl p-16 text-center border border-outline-variant/10">
-          <FolderOpen size={44} className="mx-auto text-on-surface-variant/40 mb-4" />
-          <p className="text-on-surface-variant text-sm">
-            {search || statusFilter !== 'All' ? 'No matching projects' : 'No projects yet'}
+        <div className="bg-surface-container-lowest rounded-3xl p-16 text-center border border-dashed border-outline-variant/20 mt-8 shadow-sm">
+          <div className="w-16 h-16 bg-surface-container rounded-2xl flex items-center justify-center mx-auto mb-5 border border-outline-variant/10">
+            <FolderOpen size={32} className="text-primary/60" />
+          </div>
+          <p className="text-on-surface text-lg font-bold font-family-display">
+            {search || statusFilter !== 'All' ? 'No projects matched' : 'Your library is empty'}
           </p>
-          <p className="text-on-surface-variant/50 text-xs mt-1">
-            {search || statusFilter !== 'All' ? 'Try adjusting your filters' : 'Start organizing your work'}
+          <p className="text-on-surface-variant text-sm mt-2 max-w-sm mx-auto">
+            {search || statusFilter !== 'All' ? 'Adjust your search query or filters to find what you are looking for.' : 'Start organizing your work by creating your first awesome project.'}
           </p>
           {!search && statusFilter === 'All' && (
             <button
               onClick={() => setShowModal(true)}
-              className="mt-4 btn-gradient px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center gap-2"
+              className="mt-8 btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm"
             >
-              <Plus size={14} /> Create your first project
+              Construct Project
             </button>
           )}
         </div>
       )}
 
       {/* Create Project Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="New Project" size="md">
-        <div className="space-y-4">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Initialize New Project" size="md">
+        <div className="space-y-5">
+           <div className="bg-surface-container rounded-xl p-4 border border-outline-variant/10 text-xs text-on-surface-variant/80 flex items-start gap-3">
+              <FolderOpen size={16} className="text-primary shrink-0 mt-0.5" />
+              <p>WorkSpace auto-generates a unique gradient cover and premium emoji based on your project name to help you identify it instantly on the board.</p>
+           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-on-surface-variant font-medium block mb-1.5">
+            <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">
               Project Name *
             </label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="My awesome project"
-              className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
+              placeholder="e.g. Next.js SaaS Boilerplate"
+              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               autoFocus
             />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-on-surface-variant font-medium block mb-1.5">
-              Description
+            <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">
+              Goal / Description
             </label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Brief description of the project..."
+              placeholder="What are we building?"
               rows={3}
-              className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none resize-none"
+              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none resize-none"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs uppercase tracking-wider text-on-surface-variant font-medium block mb-1.5">
+              <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">
                 Status
               </label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
+                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               >
                 {PROJECT_STATUSES.map((s) => (
                   <option key={s} value={s}>{s}</option>
@@ -319,7 +352,7 @@ function ProjectsContent() {
               </select>
             </div>
             <div>
-              <label className="text-xs uppercase tracking-wider text-on-surface-variant font-medium block mb-1.5">
+              <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">
                 Tags
               </label>
               <input
@@ -327,35 +360,38 @@ function ProjectsContent() {
                 value={form.tags}
                 onChange={(e) => setForm({ ...form, tags: e.target.value })}
                 placeholder="react, typescript..."
-                className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
+                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-on-surface-variant font-medium block mb-1.5">
+            <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">
               GitHub Repository
             </label>
-            <input
-              type="text"
-              value={form.githubUrl}
-              onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
-              placeholder="https://github.com/user/repo"
-              className="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/15 rounded-xl text-sm focus:border-primary/40 focus:outline-none"
-            />
+            <div className="relative">
+               <Github size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
+               <input
+                 type="text"
+                 value={form.githubUrl}
+                 onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
+                 placeholder="https://github.com/user/repo"
+                 className="w-full pl-11 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium focus:border-primary/40 focus:outline-none"
+               />
+            </div>
           </div>
-          <div className="flex justify-end gap-3 pt-2 border-t border-outline-variant/10">
+          <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
             <button
               onClick={() => setShowModal(false)}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-bright transition-colors"
+              className="px-5 py-2.5 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-xl transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={createProject}
               disabled={!form.name.trim()}
-              className="btn-gradient px-5 py-2.5 rounded-xl text-sm font-medium disabled:opacity-50"
+              className="btn-gradient px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 shadow-sm"
             >
-              Create Project
+              Initialize Project
             </button>
           </div>
         </div>
@@ -366,7 +402,7 @@ function ProjectsContent() {
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={<div className="animate-pulse space-y-4"><div className="h-8 bg-surface-container rounded-lg w-48" /></div>}>
+    <Suspense fallback={<div className="animate-pulse space-y-4 max-w-6xl mx-auto"><div className="h-10 bg-surface-container rounded-xl w-64 mb-8" /><div className="h-[400px] bg-surface-container rounded-2xl" /></div>}>
       <ProjectsContent />
     </Suspense>
   );

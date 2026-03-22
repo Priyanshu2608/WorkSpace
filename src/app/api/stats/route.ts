@@ -17,6 +17,7 @@ export async function GET() {
       take: 15,
       orderBy: [{ dueDate: 'asc' }, { createdAt: 'desc' }],
       include: {
+        project: { select: { id: true, name: true } },
         feature: {
           include: { project: { select: { id: true, name: true } } },
         },

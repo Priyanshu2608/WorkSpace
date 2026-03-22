@@ -75,9 +75,6 @@ export default function BlockEditor({
           --bn-colors-menu-text: #e1e1e6 !important;
           font-family: inherit !important;
         }
-        .blocknote-wrapper .bn-editor {
-          padding-inline: 0 !important;
-        }
       `}</style>
     </div>
   );

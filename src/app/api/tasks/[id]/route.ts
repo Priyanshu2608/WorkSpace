@@ -13,6 +13,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       ...(data.dueDate !== undefined && { dueDate: data.dueDate ? new Date(data.dueDate) : null }),
     },
     include: {
+      project: { select: { id: true, name: true } },
       feature: {
         include: { project: { select: { id: true, name: true } } },
       },
