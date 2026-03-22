@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   FolderOpen,
@@ -14,7 +14,9 @@ import {
   Menu,
   X,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
+import SettingsModal from './SettingsModal';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -24,14 +26,21 @@ const navItems = [
   { href: '/wireframes', icon: Pencil, label: 'Wireframes' },
 ];
 
-const bottomItems = [
-  { href: '#', icon: Settings, label: 'Settings' },
-  { href: '#', icon: HelpCircle, label: 'Support' },
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login');
+      router.refresh();
+    } catch (e) {
+      console.error('Logout failed', e);
+    }
+  };
 
   return (
     <>
@@ -105,18 +114,25 @@ export default function Sidebar() {
 
         {/* Bottom section */}
         <div className="px-4 pb-6 space-y-1.5 border-t border-outline-variant/20 pt-4">
-          {bottomItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[0.9375rem] font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-300 group"
-            >
-              <item.icon size={20} className="text-on-surface-variant/70 group-hover:text-on-surface transition-transform duration-300 group-hover:scale-110" />
-              {item.label}
-            </Link>
-          ))}
+          <button
+            onClick={() => { setIsSettingsOpen(true); setIsOpen(false); }}
+            className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[0.9375rem] font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-300 group"
+          >
+            <Settings size={20} className="text-on-surface-variant/70 group-hover:text-on-surface transition-transform duration-300 group-hover:scale-110" />
+            Settings
+          </button>
+          
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[0.9375rem] font-semibold text-error/80 hover:bg-error/10 hover:text-error transition-all duration-300 group"
+          >
+            <LogOut size={20} className="text-error/70 group-hover:text-error transition-transform duration-300 group-hover:scale-110" />
+            Log Out
+          </button>
         </div>
       </aside>
+
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>
   );
 }

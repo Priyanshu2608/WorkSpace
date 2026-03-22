@@ -2,13 +2,13 @@ import { GitHubRepo, GitHubCommit, GitHubBranch, GitHubCollaborator, GitHubPullR
 
 const GITHUB_API = 'https://api.github.com';
 
-const getHeaders = (): Record<string, string> => {
-  const token = process.env.GITHUB_ACCESS_TOKEN;
-  return token ? { Authorization: `token ${token}` } : {};
+const getHeaders = (token?: string | null): Record<string, string> => {
+  const t = token || process.env.GITHUB_ACCESS_TOKEN;
+  return t ? { Authorization: `token ${t}` } : {};
 };
 
-export async function getRepoInfo(owner: string, repo: string): Promise<GitHubRepo> {
-  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}`, { headers: getHeaders() });
+export async function getRepoInfo(owner: string, repo: string, token?: string | null): Promise<GitHubRepo> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}`, { headers: getHeaders(token) });
   if (!res.ok) {
     if (res.status === 403 || res.status === 404) throw new Error('Repository not found or rate limited');
     throw new Error(`GitHub API error: ${res.status}`);
@@ -16,8 +16,8 @@ export async function getRepoInfo(owner: string, repo: string): Promise<GitHubRe
   return res.json();
 }
 
-export async function getRepoCommits(owner: string, repo: string, count = 10): Promise<GitHubCommit[]> {
-  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/commits?per_page=${count}`, { headers: getHeaders() });
+export async function getRepoCommits(owner: string, repo: string, count = 10, token?: string | null): Promise<GitHubCommit[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/commits?per_page=${count}`, { headers: getHeaders(token) });
   if (!res.ok) {
     if (res.status === 403 || res.status === 404) return [];
     throw new Error(`GitHub API error: ${res.status}`);
@@ -40,8 +40,8 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string } | n
   }
 }
 
-export async function getRepoBranches(owner: string, repo: string): Promise<GitHubBranch[]> {
-  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/branches?per_page=10`, { headers: getHeaders() });
+export async function getRepoBranches(owner: string, repo: string, token?: string | null): Promise<GitHubBranch[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/branches?per_page=10`, { headers: getHeaders(token) });
   if (!res.ok) {
     if (res.status === 403 || res.status === 404) return [];
     throw new Error(`GitHub API error: ${res.status}`);
@@ -49,8 +49,8 @@ export async function getRepoBranches(owner: string, repo: string): Promise<GitH
   return res.json();
 }
 
-export async function getRepoCollaborators(owner: string, repo: string): Promise<GitHubCollaborator[]> {
-  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/contributors?per_page=10`, { headers: getHeaders() });
+export async function getRepoCollaborators(owner: string, repo: string, token?: string | null): Promise<GitHubCollaborator[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/contributors?per_page=10`, { headers: getHeaders(token) });
   if (!res.ok) {
     if (res.status === 403 || res.status === 404 || res.status === 401) return []; // Fallback gracefully if contributors forbidden
     throw new Error(`GitHub API error: ${res.status}`);
@@ -58,8 +58,8 @@ export async function getRepoCollaborators(owner: string, repo: string): Promise
   return res.json();
 }
 
-export async function getRepoPulls(owner: string, repo: string): Promise<GitHubPullRequest[]> {
-  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/pulls?state=open&per_page=5`, { headers: getHeaders() });
+export async function getRepoPulls(owner: string, repo: string, token?: string | null): Promise<GitHubPullRequest[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/pulls?state=open&per_page=5`, { headers: getHeaders(token) });
   if (!res.ok) {
     if (res.status === 403 || res.status === 404) return [];
     throw new Error(`GitHub API error: ${res.status}`);
