@@ -161,13 +161,13 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
       {/* Board Controls */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-xs">
-          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/40" />
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/80" />
           <input
             type="text"
             placeholder="Search features..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 bg-surface-container border border-outline-variant/10 rounded-lg text-xs placeholder:text-on-surface-variant/40 focus:border-primary/30 focus:outline-none"
+            className="w-full pl-8 pr-3 py-1.5 bg-surface-container border border-outline-variant/10 rounded-lg text-xs placeholder:text-on-surface-variant/80 focus:border-primary/30 focus:outline-none"
           />
         </div>
         <div className="flex items-center gap-0.5 bg-surface-container rounded-lg p-0.5">
@@ -183,7 +183,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
             </button>
           ))}
         </div>
-        <span className="text-xs text-on-surface-variant/40 ml-auto">{features.length} features</span>
+        <span className="text-xs text-on-surface-variant/80 ml-auto">{features.length} features</span>
       </div>
 
       {/* Board */}
@@ -220,7 +220,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                         >
                           <div className={`w-2.5 h-2.5 rounded-sm ${config.dotColor}`} />
                           <h3 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{column}</h3>
-                          <span className="text-[0.625rem] font-medium text-on-surface-variant/40 bg-surface-container-high rounded-full px-1.5 py-0.5">
+                          <span className="text-[0.625rem] font-medium text-on-surface-variant/80 bg-surface-container-high rounded-full px-1.5 py-0.5">
                             {columnFeatures.length}
                           </span>
                         </button>
@@ -268,7 +268,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                                     <div className="p-3">
                                       {/* Header row: drag handle + ID + actions */}
                                       <div className="flex items-center gap-1.5 mb-2">
-                                        <div {...provided.dragHandleProps} className="text-on-surface-variant/25 hover:text-on-surface-variant cursor-grab shrink-0">
+                                        <div {...provided.dragHandleProps} className="text-on-surface-variant/70 hover:text-on-surface-variant cursor-grab shrink-0">
                                           <GripVertical size={12} />
                                         </div>
                                         <span className="text-[0.625rem] font-mono text-on-surface-variant/35">
@@ -277,7 +277,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                                         <div className="flex-1" />
                                         <button
                                           onClick={(e) => { e.stopPropagation(); setSelectedFeature(feature); }}
-                                          className="p-0.5 rounded text-on-surface-variant/25 hover:text-on-surface-variant transition-colors"
+                                          className="p-0.5 rounded text-on-surface-variant/70 hover:text-on-surface-variant transition-colors"
                                         >
                                           <MoreHorizontal size={13} />
                                         </button>
@@ -336,7 +336,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                                         )}
 
                                         {/* Time ago */}
-                                        <span className="text-[0.5625rem] text-on-surface-variant/30">
+                                        <span className="text-[0.5625rem] text-on-surface-variant/60">
                                           {timeAgo(feature.updatedAt)}
                                         </span>
                                       </div>
@@ -357,11 +357,11 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                                             <label key={task.id} className="flex items-center gap-2 py-1 cursor-pointer group">
                                               <button
                                                 onClick={(e) => { e.preventDefault(); toggleTask(task.id, !task.done); }}
-                                                className={`shrink-0 ${task.done ? 'text-success' : 'text-on-surface-variant/25 hover:text-on-surface-variant/50'}`}
+                                                className={`shrink-0 ${task.done ? 'text-success' : 'text-on-surface-variant/70 hover:text-on-surface-variant/50'}`}
                                               >
                                                 {task.done ? <CheckCircle2 size={13} /> : <Circle size={13} />}
                                               </button>
-                                              <span className={`text-xs ${task.done ? 'line-through text-on-surface-variant/30' : 'text-on-surface-variant/80'}`}>
+                                              <span className={`text-xs ${task.done ? 'line-through text-on-surface-variant/60' : 'text-on-surface-variant/80'}`}>
                                                 {task.title}
                                               </span>
                                             </label>
@@ -417,7 +417,7 @@ export default function KanbanBoard({ projectId, projectName }: KanbanBoardProps
                           setQuickAddColumn(column);
                           setTimeout(() => quickAddRef.current?.focus(), 50);
                         }}
-                        className="w-full mt-2 p-2.5 rounded-xl text-xs text-on-surface-variant/30 hover:text-on-surface-variant/60 hover:bg-surface-container/50 transition-all flex items-center justify-center gap-1.5 border border-dashed border-transparent hover:border-outline-variant/15"
+                        className="w-full mt-2 p-2.5 rounded-xl text-xs text-on-surface-variant/60 hover:text-on-surface-variant/60 hover:bg-surface-container/50 transition-all flex items-center justify-center gap-1.5 border border-dashed border-transparent hover:border-outline-variant/15"
                       >
                         <Plus size={12} /> Add feature
                       </button>
