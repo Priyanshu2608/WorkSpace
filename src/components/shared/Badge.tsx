@@ -6,12 +6,12 @@ interface BadgeProps {
 }
 
 const variantClasses = {
-  default: 'bg-surface-bright text-on-surface-variant',
-  primary: 'bg-primary-container/30 text-primary',
-  success: 'bg-green-500/15 text-success',
-  warning: 'bg-yellow-500/15 text-warning',
-  error: 'bg-red-500/15 text-error',
-  info: 'bg-blue-500/15 text-info',
+  default: 'bg-surface-bright text-on-surface-variant border border-outline-variant/30',
+  primary: 'bg-primary/15 text-[#1f4f5a] border border-primary/20',
+  success: 'bg-success/20 text-[#1e5c5d] border border-success/30',
+  warning: 'bg-warning/30 text-[#604910] border border-warning/40',
+  error: 'bg-error/20 text-[#8a2f1c] border border-error/30',
+  info: 'bg-info/30 text-[#1e5c5d] border border-info/40',
 };
 
 const sizeClasses = {
