@@ -1,10 +1,24 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+model User {
+  id          String      @id @default(cuid())
+  name        String
+  email       String      @unique
+  password    String      // Hashed password
+  githubToken String?
+  projects    Project[]
+  tasks       Task[]
+  notes       Note[]
+  wireframes  Wireframe[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Project {
@@ -16,6 +30,8 @@ model Project {
   tags        String?
   startDate   DateTime?
   targetDate  DateTime?
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   features    Feature[]
   notes       Note[]
   wireframes  Wireframe[]
@@ -51,6 +67,8 @@ model Task {
   feature   Feature?  @relation(fields: [featureId], references: [id], onDelete: Cascade)
   projectId String?
   project   Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
 }
 
@@ -61,6 +79,8 @@ model Note {
   template  String?
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -71,6 +91,8 @@ model Wireframe {
   data      String   @default("{}")
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

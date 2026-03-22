@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
+  
+  const existing = await prisma.task.findUnique({ where: { id, userId: session.userId } });
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
   const data = await req.json();
   const task = await prisma.task.update({
     where: { id },
@@ -23,7 +31,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const { id } = await params;
+
+  const existing = await prisma.task.findUnique({ where: { id, userId: session.userId } });
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
   await prisma.task.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
