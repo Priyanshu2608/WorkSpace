@@ -1,4 +1,4 @@
-import { GitHubRepo, GitHubCommit } from '@/types';
+import { GitHubRepo, GitHubCommit, GitHubBranch, GitHubCollaborator, GitHubPullRequest } from '@/types';
 
 const GITHUB_API = 'https://api.github.com';
 
@@ -27,4 +27,25 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string } | n
     if (parts.length === 2) return { owner: parts[0], repo: parts[1] };
     return null;
   }
+}
+
+export async function getRepoBranches(owner: string, repo: string): Promise<GitHubBranch[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/branches?per_page=10`);
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getRepoCollaborators(owner: string, repo: string): Promise<GitHubCollaborator[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/contributors?per_page=10`);
+  if (!res.ok) {
+    if (res.status === 403 || res.status === 404 || res.status === 401) return []; // Fallback gracefully if contributors forbidden
+    throw new Error(`GitHub API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function getRepoPulls(owner: string, repo: string): Promise<GitHubPullRequest[]> {
+  const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/pulls?state=open&per_page=5`);
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+  return res.json();
 }
