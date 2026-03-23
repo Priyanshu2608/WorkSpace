@@ -8,7 +8,8 @@ import {
   parseGitHubUrl 
 } from '@/lib/github';
 import { getSession } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/lib/mongoose';
+import { User } from '@/models/User';
 
 export async function GET(req: Request) {
   const session = await getSession();
@@ -21,7 +22,8 @@ export async function GET(req: Request) {
   const parsed = parseGitHubUrl(repo);
   if (!parsed) return NextResponse.json({ error: 'Invalid GitHub URL or owner/repo format' }, { status: 400 });
 
-  const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { githubToken: true } });
+  await connectToDatabase();
+  const user = await User.findById(session.userId).select('githubToken').lean();
   const token = user?.githubToken;
 
   try {

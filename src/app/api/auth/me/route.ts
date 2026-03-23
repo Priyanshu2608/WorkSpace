@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import connectToDatabase from '@/lib/mongoose';
+import { User } from '@/models/User';
 
 export async function GET() {
   const session = await getSession();
@@ -8,10 +9,8 @@ export async function GET() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    select: { id: true, name: true, email: true, githubToken: true }
-  });
+  await connectToDatabase();
+  const user = await User.findById(session.userId).select('name email githubToken');
 
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -21,7 +20,7 @@ export async function GET() {
   const hasGithubToken = !!user.githubToken;
 
   return NextResponse.json({ 
-    user: { id: user.id, name: user.name, email: user.email }, 
+    user: { id: user._id.toString(), name: user.name, email: user.email }, 
     hasGithubToken 
   }, { status: 200 });
 }
@@ -34,10 +33,8 @@ export async function PUT(req: Request) {
 
   try {
     const { githubToken } = await req.json();
-    await prisma.user.update({
-      where: { id: session.userId },
-      data: { githubToken: githubToken || null }
-    });
+    await connectToDatabase();
+    await User.findByIdAndUpdate(session.userId, { githubToken: githubToken || null });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
