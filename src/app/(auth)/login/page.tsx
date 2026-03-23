@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember: rememberMe }),
       });
 
       const data = await res.json();
@@ -45,6 +47,37 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-on-surface mb-2">Welcome back</h1>
           <p className="text-on-surface-variant font-medium">Log in to your continuous workspace.</p>
+        </div>
+
+        <div className="mb-6 flex justify-center">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              try {
+                setLoading(true);
+                const res = await fetch('/api/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ credential: credentialResponse.credential }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Google login failed');
+                router.push('/dashboard');
+                router.refresh();
+              } catch (err: any) {
+                setError(err.message);
+                setLoading(false);
+              }
+            }}
+            onError={() => setError('Google login failed')}
+            shape="rectangular"
+            theme="outline"
+          />
+        </div>
+
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-surface-dim/30"></div>
+          <span className="px-4 text-xs uppercase tracking-wider font-bold text-on-surface-variant">Or continue with email</span>
+          <div className="flex-grow border-t border-surface-dim/30"></div>
         </div>
 
         {error && (
@@ -78,6 +111,19 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
             />
+          </div>
+
+          <div className="flex items-center pt-1">
+            <input
+              id="remember"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 text-primary bg-surface-dim border-surface-dim/30 rounded focus:ring-primary focus:ring-2 cursor-pointer"
+            />
+            <label htmlFor="remember" className="ml-2 text-sm font-medium text-on-surface-variant cursor-pointer">
+              Remember me for 30 days
+            </label>
           </div>
 
           <button

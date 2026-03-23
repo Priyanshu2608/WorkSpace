@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -46,6 +47,38 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-on-surface mb-2">Create Account</h1>
           <p className="text-on-surface-variant font-medium">Join WorkSpace and start building.</p>
+        </div>
+
+        <div className="mb-6 flex justify-center">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              try {
+                setLoading(true);
+                const res = await fetch('/api/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ credential: credentialResponse.credential }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Google signup failed');
+                router.push('/dashboard');
+                router.refresh();
+              } catch (err: any) {
+                setError(err.message);
+                setLoading(false);
+              }
+            }}
+            onError={() => setError('Google signup failed')}
+            shape="rectangular"
+            theme="outline"
+            text="signup_with"
+          />
+        </div>
+
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-surface-dim/30"></div>
+          <span className="px-4 text-xs uppercase tracking-wider font-bold text-on-surface-variant">Or sign up with email</span>
+          <div className="flex-grow border-t border-surface-dim/30"></div>
         </div>
 
         {error && (

@@ -5,7 +5,7 @@ import { verifyPassword, setSession } from '@/lib/auth';
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, remember = false } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    await setSession({ userId: user._id.toString(), email: user.email, name: user.name });
+    await setSession({ userId: user._id.toString(), email: user.email, name: user.name }, remember);
 
     return NextResponse.json({ user: { id: user._id.toString(), name: user.name, email: user.email } }, { status: 200 });
   } catch (error) {
