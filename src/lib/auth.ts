@@ -20,11 +20,11 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export async function signToken(payload: SessionPayload): Promise<string> {
+export async function signToken(payload: SessionPayload, remember: boolean = false): Promise<string> {
   return new jose.SignJWT(payload as any)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime(remember ? '30d' : '1d')
     .sign(secret);
 }
 
@@ -44,16 +44,22 @@ export async function getSession(): Promise<SessionPayload | null> {
   return verifyToken(token);
 }
 
-export async function setSession(payload: SessionPayload) {
-  const token = await signToken(payload);
+export async function setSession(payload: SessionPayload, remember: boolean = false) {
+  const token = await signToken(payload, remember);
   const cookieStore = await cookies();
-  cookieStore.set('token', token, {
+  
+  const cookieOptions: any = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-  });
+  };
+  
+  if (remember) {
+    cookieOptions.maxAge = 60 * 60 * 24 * 30; // 30 days
+  }
+
+  cookieStore.set('token', token, cookieOptions);
 }
 
 export async function clearSession() {
